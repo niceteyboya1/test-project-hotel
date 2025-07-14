@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>登录</title>
+    <script src="./js/jquery-3.2.1.min.js"></script>
+    <script src="./js/layer/layer.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #fffbe6 0%, #ffe066 100%);
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+        }
+        .login-container {
+            width: 340px;
+            margin: 120px auto;
+            background: #fffde7cc;
+            border-radius: 18px;
+            box-shadow: 0 4px 24px 0 #ffe06699;
+            padding: 36px 32px 28px 32px;
+            text-align: center;
+            animation: fadeInDown 1s;
+        }
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-60px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        h2 {
+            color: #ffb300;
+            margin-bottom: 28px;
+            letter-spacing: 2px;
+        }
+        .form-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 18px;
+        }
+        label {
+            color: #bfa100;
+            font-weight: bold;
+            margin-right: 12px;
+            min-width: 60px;
+            text-align: right;
+        }
+        input[type="text"], input[type="password"] {
+            width: 70%;
+            padding: 8px 12px;
+            border: 1.5px solid #ffe066;
+            border-radius: 6px;
+            background: #fffbe6;
+            color: #bfa100;
+            font-size: 15px;
+            transition: box-shadow 0.3s, border-color 0.3s;
+        }
+        input[type="text"]:focus, input[type="password"]:focus {
+            border-color: #ffd600;
+            box-shadow: 0 0 8px #ffe06699;
+            outline: none;
+        }
+        .login-btn {
+            width: 80%;
+            padding: 10px 0;
+            background: linear-gradient(90deg, #ffe066 0%, #ffd600 100%);
+            color: #bfa100;
+            border: none;
+            border-radius: 8px;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 8px #ffe06655;
+            transition: background 0.3s, transform 0.2s;
+            margin-top: 10px;
+        }
+        .login-btn:active {
+            background: linear-gradient(90deg, #ffd600 0%, #ffe066 100%);
+            transform: scale(0.97);
+        }
+        .login-btn.loading {
+            background: repeating-linear-gradient(90deg, #ffe066, #ffd600 20px, #ffe066 40px);
+            color: #bfa10099;
+            animation: btnLoading 1s linear infinite;
+        }
+        @keyframes btnLoading {
+            0% { background-position: 0 0; }
+            100% { background-position: 80px 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>用户登录</h2>
+        <form id="loginForm">
+            <div class="form-row">
+                <label for="username">用户名：</label>
+                <input type="text" id="username" name="username" required autocomplete="username" placeholder="请输入用户名" />
+            </div>
+            <div class="form-row">
+                <label for="password">密码：</label>
+                <input type="password" id="password" name="password" required autocomplete="current-password" placeholder="请输入密码" />
+            </div>
+            <button type="submit" class="login-btn" id="loginBtn">登录</button>
+        </form>
+    </div>
+    <script>
+        $(function() {
+            $('#loginForm').on('submit', function(e) {
+                e.preventDefault();
+                var username = $('#username').val();
+                var password = $('#password').val();
+                var $btn = $('#loginBtn');
+                $btn.addClass('loading').text('登录中...');
+                $.ajax({
+                    url: 'http://localhost:8081/member/checklogin',
+                    type: 'POST',
+                    data: { username: username, password: password },
+                    success: function(res) {
+                        setTimeout(function() { // 动态延迟模拟
+                            $btn.removeClass('loading').text('登录');
+                            if(res.success) {
+                                layer.msg('登录成功', {
+                                    icon: 1,
+                                    time: 1200,
+                                    anim: 6,
+                                    shade: 0.2
+                                }, function(){
+                                    // 可跳转主页 window.location.href = 'index.html';
+                                });
+                            } else {
+                                layer.msg(res.message || '登录失败', {
+                                    icon: 2,
+                                    anim: 6,
+                                    shade: 0.2
+                                });
+                            }
+                        }, 600);
+                    },
+                    error: function() {
+                        $btn.removeClass('loading').text('登录');
+                        layer.msg('请求失败', {
+                            icon: 2,
+                            anim: 6,
+                            shade: 0.2
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html> 
