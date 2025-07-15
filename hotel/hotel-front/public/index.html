@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>酒店管理系统-首页</title>
+</head>
+<body>
+    <!-- 页眉 -->
+    <div id="header" style="text-align:center;">我是页眉</div>
+    <!-- 用户信息和我的订单 -->
+    <div id="user-info">
+        <span style="float:left;">用户名：<span id="username"></span></span>
+        <a href="orders.html" style="float:right;">我的订单</a>
+        <div style="clear:both;"></div>
+    </div>
+    <!-- 房间图片表格 -->
+    <table border="1" cellspacing="0" cellpadding="8">
+        <tr>
+            <td><img src="https://via.placeholder.com/150" alt="房间1"><br>房间类型1</td>
+            <td><img src="https://via.placeholder.com/150" alt="房间2"><br>房间类型2</td>
+            <td><img src="https://via.placeholder.com/150" alt="房间3"><br>房间类型3</td>
+        </tr>
+        <tr>
+            <td><img src="https://via.placeholder.com/150" alt="房间4"><br>房间类型4</td>
+            <td><img src="https://via.placeholder.com/150" alt="房间5"><br>房间类型5</td>
+            <td><img src="https://via.placeholder.com/150" alt="房间6"><br>房间类型6</td>
+        </tr>
+    </table>
+    <script>
+        // 假设用户名通过localStorage传递
+        document.getElementById('username').textContent = localStorage.getItem('username') || '未登录';
+    </script>
+</body>
+</html>
