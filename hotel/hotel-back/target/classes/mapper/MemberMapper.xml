@@ -8,4 +8,8 @@
         WHERE username = #{username} AND password = #{password}
         LIMIT 1
     </select>
+    <insert id="insertMember" parameterType="cn.gok.hotel.entity.Member">
+    INSERT INTO member (username, password, real_name, phone)
+    VALUES (#{username}, #{password}, #{realName}, #{phone})
+    </insert>
 </mapper> 
