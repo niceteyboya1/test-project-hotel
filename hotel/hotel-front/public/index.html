@@ -13,46 +13,35 @@
         <a href="orders.html" style="float:right;">我的订单</a>
         <div style="clear:both;"></div>
     </div>
-    <!-- 房间图片表格 -->
-    <table border="1" cellspacing="0" cellpadding="8">
-        <tr>
-            <td>
-                <img src="img/img1.png" alt="总统套房" width="300" height="200"><br>
-                总统套房<br>
-                <span>60 平方米、独立起居室、书房、无线上网</span>
-            </td>
-            <td>
-                <img src="img/img2.png" alt="豪华双床房" width="300" height="200"><br>
-                豪华双床房<br>
-                <span>40 平方米、无线上网、55 英寸高清电视</span>
-            </td>
-            <td>
-                <img src="img/img3.png" alt="豪华大床房" width="300" height="200"><br>
-                豪华大床房<br>
-                <span>40 平方米、无线上网、55 英寸高清电视</span>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <img src="img/img4.png" alt="标准双床房" width="300" height="200"><br>
-                标准双床房<br>
-                <span>40 平方米、55 英寸高清电视</span>
-            </td>
-            <td>
-                <img src="img/img5.png" alt="标准大床房" width="300" height="200"><br>
-                标准大床房<br>
-                <span>40 平方米、55 英寸高清电视</span>
-            </td>
-            <td>
-                <img src="img/img6.png" alt="标准单人房" width="300" height="200"><br>
-                标准单人房<br>
-                <span>35 平方米、55 英寸高清电视、无障碍淋浴间</span>
-            </td>
-        </tr>
-    </table>
+    
     <script>
         // 假设用户名通过localStorage传递
         document.getElementById('username').textContent = localStorage.getItem('username') || '未登录';
-    </script>
+        $(function() {
+        $.ajax({
+            url: 'http://localhost:8081/api/room/findlist6',
+            type: 'GET',
+            success: function(res) {
+                // 假设返回数据为 [{roomName: '总统套房', price: 8888}, ...]
+                var html = '';
+                if (res && res.length) {
+                    html += '<table border="1" cellspacing="0" cellpadding="8"><tr><th>房间名</th><th>价格</th></tr>';
+                    for (var i = 0; i < res.length; i++) {
+                        html += '<tr><td>' + res[i].roomName + '</td><td>' + res[i].price + '</td></tr>';
+                    }
+                    html += '</table>';
+                } else {
+                    html = '暂无房间数据';
+                }
+                $('#room-list').html(html);
+            },
+            error: function() {
+                $('#room-list').html('房间数据加载失败');
+            }
+        });
+    });
+</script>
+<!-- 在合适位置加一个容器 -->
+<div id="room-list"></div>
 </body>
 </html>
