@@ -11,7 +11,6 @@ import cn.gok.hotel.service.RoomTypeService;
 
 @RestController
 @RequestMapping("/api/room")
-@CrossOrigin(origins = "*") // 跨域配置，和MemberController一致
 public class RoomController {
 
     @Autowired
