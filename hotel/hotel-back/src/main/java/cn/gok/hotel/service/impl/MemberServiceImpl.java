@@ -15,4 +15,10 @@ public class MemberServiceImpl implements MemberService {
     public Member checkLogin(String username, String password) {
         return memberMapper.findByUsernameAndPassword(username, password);
     }
-} 
+
+    @Override
+    public boolean register(Member member) {
+        // 可加用户名唯一性校验
+        return memberMapper.insertMember(member) > 0;
+    }
+}

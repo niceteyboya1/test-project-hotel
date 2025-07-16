@@ -9,8 +9,5 @@ public class RoomType {
     private String roomSizeType;
     private String areaDesc;
     private String floorDesc;
-    private String otherDesc;
-    private String image1;
-    private String image2;
-    private String image3;
+    private String price;
 } 

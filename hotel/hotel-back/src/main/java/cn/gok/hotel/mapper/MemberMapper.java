@@ -5,4 +5,5 @@ import org.apache.ibatis.annotations.Param;
 
 public interface MemberMapper {
     Member findByUsernameAndPassword(@Param("username") String username, @Param("password") String password);
+    int insertMember(Member member); // 新增
 } 

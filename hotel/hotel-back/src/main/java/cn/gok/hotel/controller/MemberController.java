@@ -33,4 +33,23 @@ public class MemberController {
         }
         return result;
     }
+    @PostMapping("/register")
+    @ResponseBody
+    public Map<String, Object> register(@RequestParam String username,
+                                        @RequestParam String password,
+                                        @RequestParam String realName,
+                                        @RequestParam String phone) {
+        Map<String, Object> result = new HashMap<>();
+        Member member = new Member();
+        member.setUsername(username);
+        member.setPassword(password);
+        member.setRealName(realName);
+        member.setPhone(phone);
+        boolean success = memberService.register(member);
+        result.put("success", success);
+        if (!success) {
+            result.put("message", "注册失败，用户名可能已存在");
+        }
+        return result;
+    }
 } 

@@ -102,6 +102,9 @@
             </div>
             <button type="submit" class="login-btn" id="loginBtn">登录</button>
         </form>
+        <div style="margin-top:12px;">
+            <a href="register.html">没有账号？去注册</a>
+        </div>
     </div>
     <script>
         $(function() {
@@ -119,13 +122,14 @@
                         setTimeout(function() { // 动态延迟模拟
                             $btn.removeClass('loading').text('登录');
                             if(res.success) {
+                                localStorage.setItem('username', username);
                                 layer.msg('登录成功', {
                                     icon: 1,
                                     time: 1200,
                                     anim: 6,
                                     shade: 0.2
                                 }, function(){
-                                    // 可跳转主页 window.location.href = 'index.html';
+                                    window.location.href = 'index.html';
                                 });
                             } else {
                                 layer.msg(res.message || '登录失败', {

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>酒店管理系统-首页</title>
+</head>
+<body>
+    <!-- 页眉 -->
+    <div id="header">GKHD Hotel</div>
+    <!-- 用户信息和我的订单 -->
+    <div id="user-info">
+        <span style="float:left;">用户名：<span id="username"></span></span>
+        <a href="orders.html" style="float:right;">我的订单</a>
+        <div style="clear:both;"></div>
+    </div>
+    
+    <script>
+        // 假设用户名通过localStorage传递
+        document.getElementById('username').textContent = localStorage.getItem('username') || '未登录';
+        $(function() {
+        $.ajax({
+            url: 'http://localhost:8081/api/room/findlist6',
+            type: 'GET',
+            success: function(res) {
+                // 假设返回数据为 [{roomName: '总统套房', price: 8888}, ...]
+                var html = '';
+                if (res && res.length) {
+                    html += '<table border="1" cellspacing="0" cellpadding="8"><tr><th>房间名</th><th>价格</th></tr>';
+                    for (var i = 0; i < res.length; i++) {
+                        html += '<tr><td>' + res[i].roomName + '</td><td>' + res[i].price + '</td></tr>';
+                    }
+                    html += '</table>';
+                } else {
+                    html = '暂无房间数据';
+                }
+                $('#room-list').html(html);
+            },
+            error: function() {
+                $('#room-list').html('房间数据加载失败');
+            }
+        });
+    });
+</script>
+<!-- 在合适位置加一个容器 -->
+<div id="room-list"></div>
+</body>
+</html>
