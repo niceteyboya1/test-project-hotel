@@ -9,5 +9,5 @@ public class RoomType {
     private String roomSizeType;
     private String areaDesc;
     private String floorDesc;
-    private String price;
+    private Double price;
 } 
