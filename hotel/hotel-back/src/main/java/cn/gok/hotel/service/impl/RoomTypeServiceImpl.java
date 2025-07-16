@@ -11,6 +11,12 @@ import java.util.List;
 public class RoomTypeServiceImpl implements RoomTypeService {
     @Autowired
     private RoomTypeMapper roomTypeMapper;
+    
+
+    @Override
+    public List<RoomType> findAll() {
+        return roomTypeMapper.findAll();
+    }
 
     @Override
     public List<RoomType> findTop6() {

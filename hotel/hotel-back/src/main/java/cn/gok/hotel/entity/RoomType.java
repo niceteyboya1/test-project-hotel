@@ -10,4 +10,5 @@ public class RoomType {
     private String areaDesc;
     private String floorDesc;
     private Double price;
+    private String image1;
 } 

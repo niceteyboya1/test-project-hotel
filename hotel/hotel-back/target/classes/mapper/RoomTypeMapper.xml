@@ -5,4 +5,7 @@
     <select id="findTop6" resultType="cn.gok.hotel.entity.RoomType">
         SELECT room_type_name AS roomTypeName, price FROM room_type LIMIT 6
     </select>
+    <select id="findAll" resultType="cn.gok.hotel.entity.RoomType">
+        SELECT room_type_name AS roomTypeName, room_type_id AS roomTypeId, price FROM room_type
+    </select>
 </mapper>

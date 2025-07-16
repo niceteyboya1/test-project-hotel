@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>我的订单</title>
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <script src="js/layer/layer.js"></script>
+    <style>
+        body {
+            background: #fffbe6;
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+        }
+        .order-container {
+            width: 700px;
+            margin: 60px auto;
+            background: #fffde7cc;
+            border-radius: 14px;
+            box-shadow: 0 4px 24px 0 #ffe06699;
+            padding: 32px 32px 24px 32px;
+            text-align: center;
+        }
+        h2 {
+            color: #ffb300;
+            margin-bottom: 28px;
+            letter-spacing: 2px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1.5px solid #ffe066;
+            padding: 10px 8px;
+            color: #bfa100;
+            font-size: 15px;
+        }
+        th {
+            background: #ffe066;
+            color: #bfa100;
+        }
+        .btn-cancel {
+            padding: 6px 18px;
+            background: linear-gradient(90deg, #ffe066 0%, #ffd600 100%);
+            color: #bfa100;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 8px #ffe06655;
+            transition: background 0.3s, transform 0.2s;
+        }
+        .btn-cancel:active {
+            background: linear-gradient(90deg, #ffd600 0%, #ffe066 100%);
+            transform: scale(0.97);
+        }
+    </style>
+</head>
+<body>
+    <div class="order-container">
+        <h2>我的订单</h2>
+        <div>当前用户：<span id="username-header"></span></div>
+        <table id="orders-table">
+            <thead>
+                <tr>
+                    <th>房号</th>
+                    <th>入住时间</th>
+                    <th>下单时间</th>
+                    <th>离店时间</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- 订单数据填充 -->
+            </tbody>
+        </table>
+        <div id="no-orders" style="display:none;color:#bfa100;">暂无订单</div>
+    </div>
+    <script>
+        // 登录校验，未登录跳转
+        var username = localStorage.getItem('username');
+        if(!username) {
+            window.location.href = 'login.html';
+        }
+        document.getElementById('username-header').textContent = username;
+        // 加载订单列表
+        function loadOrders() {
+            $.ajax({
+                url: 'http://127.0.0.1:8081/api/order/list',
+                type: 'GET',
+                xhrFields: { withCredentials: true },
+                success: function(res) {
+                    var tbody = '';
+                    if(res && res.length) {
+                        for(var i=0;i<res.length;i++) {
+                            var order = res[i];
+                            tbody += '<tr>';
+                            tbody += '<td>' + order.roomNumberName + '</td>';
+                            tbody += '<td>' + (order.enterTime ? order.enterTime.toString().substring(0,10) : '') + '</td>';
+                            tbody += '<td>' + (order.checkinTime || '') + '</td>';
+                            tbody += '<td>' + (order.leaveTime ? order.leaveTime.toString().substring(0,10) : '') + '</td>';
+                            tbody += '<td><button class="btn-cancel" data-id="' + order.orderId + '">退单</button></td>';
+                            tbody += '</tr>';
+                        }
+                        $('#orders-table tbody').html(tbody);
+                        $('#no-orders').hide();
+                    } else {
+                        $('#orders-table tbody').html('');
+                        $('#no-orders').show();
+                    }
+                },
+                error: function() {
+                    $('#orders-table tbody').html('');
+                    $('#no-orders').show();
+                }
+            });
+        }
+        // 退单操作
+        $(document).on('click', '.btn-cancel', function() {
+            var orderId = $(this).data('id');
+            layer.confirm('确定要退单吗？', {icon: 3, title:'提示'}, function(index){
+                $.ajax({
+                    url: 'http://127.0.0.1:8081/api/order/delete',
+                    type: 'POST',
+                    data: { orderId: orderId },
+                    xhrFields: { withCredentials: true },
+                    success: function(res) {
+                        if(res.success) {
+                            layer.msg('退单成功', {icon: 1, time: 1200});
+                            loadOrders();
+                        } else {
+                            layer.msg(res.message || '退单失败', {icon: 2});
+                        }
+                    },
+                    error: function() {
+                        layer.msg('请求失败', {icon: 2});
+                    }
+                });
+                layer.close(index);
+            });
+        });
+        // 页面加载时加载订单
+        $(function() {
+            loadOrders();
+        });
+    </script>
+</body>
+</html>

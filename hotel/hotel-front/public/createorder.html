@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>预订房间</title>
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <script src="js/layer/layer.js"></script>
+    <style>
+        body {
+            background: #fffbe6;
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+        }
+        .order-container {
+            width: 400px;
+            margin: 60px auto;
+            background: #fffde7cc;
+            border-radius: 14px;
+            box-shadow: 0 4px 24px 0 #ffe06699;
+            padding: 32px 32px 24px 32px;
+            text-align: center;
+        }
+        h2 {
+            color: #ffb300;
+            margin-bottom: 28px;
+            letter-spacing: 2px;
+        }
+        .form-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 18px;
+        }
+        label {
+            color: #bfa100;
+            font-weight: bold;
+            margin-right: 12px;
+            min-width: 80px;
+            text-align: right;
+        }
+        input, select {
+            width: 70%;
+            padding: 8px 12px;
+            border: 1.5px solid #ffe066;
+            border-radius: 6px;
+            background: #fffbe6;
+            color: #bfa100;
+            font-size: 15px;
+            transition: box-shadow 0.3s, border-color 0.3s;
+        }
+        input:focus, select:focus {
+            border-color: #ffd600;
+            box-shadow: 0 0 8px #ffe06699;
+            outline: none;
+        }
+        .order-btn {
+            width: 80%;
+            padding: 10px 0;
+            background: linear-gradient(90deg, #ffe066 0%, #ffd600 100%);
+            color: #bfa100;
+            border: none;
+            border-radius: 8px;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 8px #ffe06655;
+            transition: background 0.3s, transform 0.2s;
+            margin-top: 10px;
+        }
+        .order-btn:active {
+            background: linear-gradient(90deg, #ffd600 0%, #ffe066 100%);
+            transform: scale(0.97);
+        }
+        .total-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="order-container">
+        <h2>预订房间</h2>
+        <div>当前用户：<span id="username-header"></span></div>
+        <form id="orderForm">
+            <div class="form-row">
+                <label for="roomType">房型：</label>
+                <select id="roomType" name="roomType" required>
+                    <option value="">请选择房型</option>
+                </select>
+            </div>
+            <div class="form-row">
+                <label for="idCard">身份证号：</label>
+                <input type="text" id="idCard" name="idCard" required placeholder="请输入身份证号" />
+            </div>
+            <div class="form-row">
+                <label for="checkin">入住时间：</label>
+                <input type="date" id="checkin" name="checkin" required />
+            </div>
+            <div class="form-row">
+                <label for="checkout">离店时间：</label>
+                <input type="date" id="checkout" name="checkout" required />
+            </div>
+            <div class="total-row">
+                <label>总价：</label>
+                <span id="totalPrice" style="color:#ff6600;font-weight:bold;">0</span> 元
+            </div>
+            <button type="submit" class="order-btn">提交预订</button>
+        </form>
+    </div>
+    <script>
+        // 登录校验，未登录跳转
+        var username = localStorage.getItem('username');
+        if(!username) {
+            window.location.href = 'login.html';
+        }
+        document.getElementById('username-header').textContent = username;
+        var roomTypeList = [];
+        // 加载房型下拉框
+        $(function() {
+            $.ajax({
+                url: 'http://127.0.0.1:8081/api/roomtype/list',
+                type: 'GET',
+                success: function(res) {
+                    if(res && res.length) {
+                        roomTypeList = res;
+                        for(var i=0;i<res.length;i++) {
+                            $('#roomType').append('<option value="'+res[i].roomTypeId+'" data-price="'+res[i].price+'">'+res[i].roomTypeName+'</option>');
+                        }
+                    }
+                }
+            });
+            // 表单提交
+            $('#orderForm').on('submit', function(e) {
+                e.preventDefault();
+                var data = {
+                    roomTypeId: $('#roomType').val(),
+                    idCard: $('#idCard').val(),
+                    checkin: $('#checkin').val(),
+                    checkout: $('#checkout').val()
+                };
+                // 这里可用ajax提交到后端接口
+                $.ajax({
+                    url: 'http://127.0.0.1:8081/api/order/create',
+                    type: 'POST',
+                    data: data,
+                    xhrFields: { withCredentials: true }, // 关键：带上cookie/session
+                    success: function(res) {
+                        if(res.success) {
+                            layer.msg('预订成功', {icon: 1, time: 1500}, function(){
+                                window.location.href = 'index.html';
+                            });
+                        } else {
+                            layer.msg(res.message || '预订失败', {icon: 2});
+                        }
+                    },
+                    error: function() {
+                        layer.msg('请求失败', {icon: 2});
+                    }
+                });
+            });
+        });
+        // 计算总价
+        function calcTotalPrice() {
+            var roomTypeId = $('#roomType').val();
+            var checkin = $('#checkin').val();
+            var checkout = $('#checkout').val();
+            var price = 0;
+            for(var i=0;i<roomTypeList.length;i++) {
+                if(roomTypeList[i].roomTypeId == roomTypeId) {
+                    price = roomTypeList[i].price;
+                    break;
+                }
+            }
+            if(roomTypeId && checkin && checkout) {
+                var start = new Date(checkin);
+                var end = new Date(checkout);
+                var days = Math.floor((end - start) / (1000*60*60*24));
+                if(days < 1) {
+                    $('#totalPrice').text(0);
+                    return;
+                }
+                $('#totalPrice').text(price * days);
+            } else {
+                $('#totalPrice').text(0);
+            }
+        }
+        $('#roomType, #checkin, #checkout').on('change', calcTotalPrice);
+    </script>
+</body>
+</html>

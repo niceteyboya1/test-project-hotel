@@ -115,14 +115,16 @@
                 var $btn = $('#loginBtn');
                 $btn.addClass('loading').text('登录中...');
                 $.ajax({
-                    url: 'http://localhost:8081/member/checklogin',
+                    url: 'http://127.0.0.1:8081/member/checklogin',
                     type: 'POST',
                     data: { username: username, password: password },
+                    xhrFields: { withCredentials: true }, // 关键
                     success: function(res) {
                         setTimeout(function() { // 动态延迟模拟
                             $btn.removeClass('loading').text('登录');
                             if(res.success) {
                                 localStorage.setItem('username', username);
+                                document.cookie = 'username=' + encodeURIComponent(username) + ';path=/; max-age='+(7*24*60*60)
                                 layer.msg('登录成功', {
                                     icon: 1,
                                     time: 1200,

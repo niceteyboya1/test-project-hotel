@@ -5,4 +5,5 @@ import java.util.List;
 
 public interface RoomTypeMapper {
     List<RoomType> findTop6();
+    List<RoomType> findAll();
 }

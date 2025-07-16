@@ -5,30 +5,63 @@
     <title>酒店管理系统-首页</title>
     <script src="js/jquery-3.2.1.min.js"></script>
 </head>
+<style>
+    #header {
+        width: 100%;
+        height: 56px;
+        background: linear-gradient(90deg, #ffe066 0%, #fffbe6 100%);
+        box-shadow: 0 2px 8px #ffe06655;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 32px;
+        font-size: 22px;
+        font-weight: bold;
+        color: #bfa100;
+        letter-spacing: 2px;
+    }
+    #header .hotel-name {
+        font-size: 22px;
+        font-weight: bold;
+    }
+    #header .user-name {
+        font-size: 16px;
+        font-weight: normal;
+    }
+</style>
 <body>
     <!-- 页眉 -->
-    <div id="header">GKHD Hotel</div>
+    <div id="header">
+        <span class="hotel-name">gkhdhotel</span>
+        <span class="user-name">用户：<span id="username-header"></span></span>
+    </div>
+    <!-- 预订按钮 -->
+    <div style="width:100%;text-align:center;margin:24px 0 12px 0;">
+        <button id="goCreateOrder" style="padding:10px 32px;font-size:18px;background:linear-gradient(90deg,#ffe066,#ffd600);color:#bfa100;border:none;border-radius:8px;box-shadow:0 2px 8px #ffe06655;cursor:pointer;font-weight:bold;">我要预订</button>
+    </div>
     <!-- 用户信息和我的订单 -->
     <div id="user-info">
-        <span style="float:left;">用户名：<span id="username"></span></span>
         <a href="orders.html" style="float:right;">我的订单</a>
         <div style="clear:both;"></div>
     </div>
     
     <script>
         // 假设用户名通过localStorage传递
-        document.getElementById('username').textContent = localStorage.getItem('username') || '未登录';
+        document.getElementById('username-header').textContent = localStorage.getItem('username') || '未登录';
         $(function() {
         $.ajax({
-            url: 'http://localhost:8081/api/room/findlist6',
+            url: 'http://127.0.0.1:8081/api/room/findlist6',
             type: 'GET',
             success: function(res) {
                 // 假设返回数据为 [{roomName: '总统套房', price: 8888}, ...]
                 var html = '';
                 if (res && res.length) {
-                    html += '<table border="1" cellspacing="0" cellpadding="8"><tr><th>房间名</th><th>价格</th></tr>';
+                    html += '<table border="1" cellspacing="0" cellpadding="8"><tr><th>房间类型</th><th>价格</th></tr>';
                     for (var i = 0; i < res.length; i++) {
-                        html += '<tr><td>' + res[i].roomName + '</td><td>' + res[i].price + '</td></tr>';
+                        html += '<tr>';
+                        html += '<td><img src="img/' + ('img'+(i+1)+'.png') + '" alt="房间图片" style="width:80px;height:60px;border-radius:6px;margin-right:8px;vertical-align:middle;">' + res[i].roomName + '</td>';
+                        html += '<td>' + res[i].price + '</td>';
+                        html += '</tr>';
                     }
                     html += '</table>';
                 } else {
@@ -40,6 +73,10 @@
                 $('#room-list').html('房间数据加载失败');
             }
         });
+    });
+    // 点击预订按钮跳转到预订页面
+    $('#goCreateOrder').click(function() {
+        window.location.href = 'createorder.html';
     });
 </script>
 <!-- 在合适位置加一个容器 -->

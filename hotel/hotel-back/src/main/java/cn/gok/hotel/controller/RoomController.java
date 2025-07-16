@@ -26,5 +26,10 @@ public class RoomController {
             map.put("price", room.getPrice()); // 假设有price字段
             return map;
         }).collect(Collectors.toList());
+        
+    }
+    @GetMapping("/list")
+    public List<RoomType> listAll() {
+        return roomTypeService.findTop6();
     }
 }
