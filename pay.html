@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>订单支付</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <!-- 引入二维码库，可本地或CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery.qrcode@1.0.3/jquery.qrcode.min.js"></script>
+    <style>
+        body { font-family: "微软雅黑", Arial, sans-serif; background: #f7f7f7; }
+        .pay-container { width: 400px; margin: 60px auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px #eee; padding: 30px; }
+        .pay-title { font-size: 22px; margin-bottom: 20px; text-align: center; }
+        .order-info { margin-bottom: 20px; }
+        .pay-type { margin-bottom: 20px; text-align: center; }
+        .pay-type label { margin: 0 15px; font-size: 16px; }
+        #qrcode { text-align: center; margin-bottom: 20px; }
+        .pay-tip { color: #888; text-align: center; }
+        .pay-btn { display: block; width: 100%; padding: 10px; background: #1aad19; color: #fff; border: none; border-radius: 4px; font-size: 18px; cursor: pointer; }
+        .pay-btn:disabled { background: #ccc; }
+    </style>
+</head>
+<body>
+<div class="pay-container">
+    <div class="pay-title">订单支付</div>
+    <div class="order-info">
+        <div>订单号：<span id="orderId"></span></div>
+        <div>金额：<span id="amount"></span> 元</div>
+    </div>
+    <div class="pay-type">
+        <label><input type="radio" name="payType" value="wechat" checked> 微信支付</label>
+        <label><input type="radio" name="payType" value="alipay"> 支付宝支付</label>
+    </div>
+    <button class="pay-btn" id="genQrcodeBtn">生成二维码</button>
+    <div id="qrcode"></div>
+    <div class="pay-tip" id="payTip">请使用微信或支付宝扫码支付</div>
+</div>
+<script>
+    // 获取URL参数
+    function getQuery(name) {
+        const reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+        const r = window.location.search.substr(1).match(reg);
+        return r ? decodeURIComponent(r[2]) : "";
+    }
+    $(function () {
+        var orderId = getQuery("orderId") || "20240001";
+        var amount = getQuery("amount") || "100.00";
+        $("#orderId").text(orderId);
+        $("#amount").text(amount);
+
+        $("#genQrcodeBtn").click(function () {
+            var payType = $("input[name='payType']:checked").val();
+            var payUrl = "";
+            if (payType === "wechat") {
+                payUrl = "https://pay.example.com/wechat?orderId=" + orderId + "&amount=" + amount;
+            } else {
+                payUrl = "https://pay.example.com/alipay?orderId=" + orderId + "&amount=" + amount;
+            }
+            $("#qrcode").empty().qrcode({
+                width: 200,
+                height: 200,
+                text: payUrl
+            });
+            $("#payTip").text("请使用" + (payType === "wechat" ? "微信" : "支付宝") + "扫码支付");
+            $(this).hide();
+            $(".pay-type").hide(); // 隐藏支付方式选择
+        });
+    });
+</script>
+</body>
+</html> 
