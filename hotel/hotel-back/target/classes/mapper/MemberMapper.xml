@@ -8,4 +8,26 @@
         WHERE username = #{username} AND password = #{password}
         LIMIT 1
     </select>
+    
+    <insert id="insertMember" parameterType="cn.gok.hotel.entity.Member">
+        INSERT INTO member (username, password, real_name, phone, balance)
+        VALUES (#{username}, #{password}, #{realName}, #{phone},0)
+    </insert>
+
+    <select id="findAll" resultType="cn.gok.hotel.entity.Member">
+        SELECT member_id, username, password, real_name, phone, id_card_no, balance, created_at
+        FROM member
+        ORDER BY created_at DESC
+    </select>
+
+    <select id="findById" resultType="cn.gok.hotel.entity.Member">
+        SELECT member_id, username, password, real_name, phone, id_card_no, balance, created_at
+        FROM member
+        WHERE member_id = #{memberId}
+        LIMIT 1
+    </select>
+
+    <select id="countMembers" resultType="int">
+        SELECT COUNT(*) FROM member
+    </select>
 </mapper> 

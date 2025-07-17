@@ -84,6 +84,12 @@
             window.location.href = 'login.html';
         }
         document.getElementById('username-header').textContent = username;
+        // 格式化日期为yyyy-MM-dd
+        function formatDateShort(str) {
+            if (!str) return '';
+            if (str.length >= 10) return str.substring(0, 10);
+            return str;
+        }
         // 加载订单列表
         function loadOrders() {
             $.ajax({
@@ -97,9 +103,9 @@
                             var order = res[i];
                             tbody += '<tr>';
                             tbody += '<td>' + order.roomNumberName + '</td>';
-                            tbody += '<td>' + (order.enterTime ? order.enterTime.toString().substring(0,10) : '') + '</td>';
-                            tbody += '<td>' + (order.checkinTime || '') + '</td>';
-                            tbody += '<td>' + (order.leaveTime ? order.leaveTime.toString().substring(0,10) : '') + '</td>';
+                            tbody += '<td>' + formatDateShort(order.enterTime) + '</td>';
+                            tbody += '<td>' + formatDateShort(order.checkinTime) + '</td>';
+                            tbody += '<td>' + formatDateShort(order.leaveTime) + '</td>';
                             tbody += '<td><button class="btn-cancel" data-id="' + order.orderId + '">退单</button></td>';
                             tbody += '</tr>';
                         }

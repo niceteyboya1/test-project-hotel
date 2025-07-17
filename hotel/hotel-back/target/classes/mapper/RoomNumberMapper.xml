@@ -7,7 +7,27 @@
         FROM room_number
         WHERE room_type_id = #{roomTypeId} AND status = 0
     </select>
+    <select id="selectAll" resultType="cn.gok.hotel.entity.RoomNumber">
+        SELECT rn.*, rt.room_type_name AS roomTypeName
+        FROM room_number rn
+        LEFT JOIN room_type rt ON rn.room_type_id = rt.room_type_id
+        ORDER BY rn.room_number_id ASC
+    </select>
     <update id="updateRoomStatus">
         UPDATE room_number SET status = #{status} WHERE room_number_id = #{roomNumberId}
+    </update>
+    <select id="countRooms" resultType="int">
+        SELECT COUNT(*) FROM room_number
+    </select>
+    <select id="countFreeRooms" resultType="int">
+        SELECT COUNT(*) FROM room_number WHERE status = 0
+    </select>
+    <select id="selectById" parameterType="int" resultType="cn.gok.hotel.entity.RoomNumber">
+        SELECT * FROM room_number WHERE room_number_id = #{roomNumberId}
+    </select>
+    <update id="updateRoom" parameterType="cn.gok.hotel.entity.RoomNumber">
+        UPDATE room_number
+        SET status = #{status}, cleaning_start_time = #{cleaningStartTime}
+        WHERE room_number_id = #{roomNumberId}
     </update>
 </mapper>

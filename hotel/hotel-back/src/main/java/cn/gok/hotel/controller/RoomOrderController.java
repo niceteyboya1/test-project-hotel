@@ -40,10 +40,31 @@ public class RoomOrderController {
             result.put("message", "请先登录");
             return result;
         }
-        RoomNumber room = roomNumberService.getRandomFreeRoom(roomTypeId);
+        java.util.Date enterDate = null;
+        java.util.Date leaveDate = null;
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            enterDate = sdf.parse(checkin);
+            leaveDate = sdf.parse(checkout);
+        } catch (Exception e) {
+            // 日期解析失败可忽略或记录日志
+        }
+        if (enterDate == null || leaveDate == null) {
+            result.put("success", false);
+            result.put("message", "日期格式错误");
+            return result;
+        }
+        // 新增校验：同一用户同一时间段只能预订一个房间
+        if (roomOrderService.hasOverlapOrder(memberId, enterDate, leaveDate)) {
+            result.put("success", false);
+            result.put("message", "同一时间段内只能预订一个房间");
+            return result;
+        }
+        // 获取可用房间（排除清洁中）
+        RoomNumber room = roomNumberService.getRandomFreeRoomEx(roomTypeId);
         if (room == null) {
             result.put("success", false);
-            result.put("message", "该房型暂无空闲房间");
+            result.put("message", "该房型暂无可预订房间（可能都在清洁中或已入住）");
             return result;
         }
         RoomOrder order = new RoomOrder();

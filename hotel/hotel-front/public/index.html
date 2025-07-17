@@ -28,6 +28,43 @@
         font-size: 16px;
         font-weight: normal;
     }
+    .room-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-gap: 32px 24px;
+        max-width: 900px;
+        margin: 32px auto 0 auto;
+    }
+    .room-card {
+        background: #fffbe6;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px #ffe06655;
+        padding: 24px 18px 18px 18px;
+        text-align: center;
+        transition: box-shadow 0.2s;
+        position: relative;
+    }
+    .room-card:hover {
+        box-shadow: 0 6px 24px #ffe06699;
+    }
+    .room-card img {
+        width: 120px;
+        height: 90px;
+        border-radius: 8px;
+        margin-bottom: 12px;
+        object-fit: cover;
+    }
+    .room-card .room-name {
+        font-size: 18px;
+        font-weight: bold;
+        color: #bfa100;
+        margin-bottom: 8px;
+    }
+    .room-card .room-price {
+        color: #ff9800;
+        font-size: 16px;
+        margin-bottom: 6px;
+    }
 </style>
 <body>
     <!-- 页眉 -->
@@ -41,7 +78,8 @@
     </div>
     <!-- 用户信息和我的订单 -->
     <div id="user-info">
-        <a href="orders.html" style="float:right;">我的订单</a>
+        <a href="orders.html" style="float:right;margin-right:20px;">我的订单</a>
+        <a href="profile.html" id="profileBtn" style="margin-left: 20px;">个人中心</a>
         <div style="clear:both;"></div>
     </div>
     
@@ -56,14 +94,15 @@
                 // 假设返回数据为 [{roomName: '总统套房', price: 8888}, ...]
                 var html = '';
                 if (res && res.length) {
-                    html += '<table border="1" cellspacing="0" cellpadding="8"><tr><th>房间类型</th><th>价格</th></tr>';
+                    html += '<div class="room-grid">';
                     for (var i = 0; i < res.length; i++) {
-                        html += '<tr>';
-                        html += '<td><img src="img/' + ('img'+(i+1)+'.png') + '" alt="房间图片" style="width:80px;height:60px;border-radius:6px;margin-right:8px;vertical-align:middle;">' + res[i].roomName + '</td>';
-                        html += '<td>' + res[i].price + '</td>';
-                        html += '</tr>';
+                        html += '<div class="room-card">';
+                        html += '<img src="img/' + ('img'+(i+1)+'.png') + '" alt="房间图片">';
+                        html += '<div class="room-name">' + res[i].roomName + '</div>';
+                        html += '<div class="room-price">￥' + res[i].price + '</div>';
+                        html += '</div>';
                     }
-                    html += '</table>';
+                    html += '</div>';
                 } else {
                     html = '暂无房间数据';
                 }

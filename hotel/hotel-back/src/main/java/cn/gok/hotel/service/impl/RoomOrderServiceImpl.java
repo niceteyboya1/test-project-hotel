@@ -37,4 +37,30 @@ public boolean deleteOrder(Integer orderId, Integer memberId) {
     }
     return false;
 }
+
+    @Override
+    public boolean hasOverlapOrder(Integer memberId, java.util.Date enterTime, java.util.Date leaveTime) {
+        int count = roomOrderMapper.countOverlapOrder(memberId, enterTime, leaveTime);
+        return count > 0;
+    }
+
+    @Override
+    public List<RoomOrder> findAll() {
+        return roomOrderMapper.selectAll();
+    }
+
+    @Override
+    public RoomOrder findById(Integer orderId) {
+        return roomOrderMapper.selectById(orderId);
+    }
+
+    @Override
+    public int countOrders() {
+        return roomOrderMapper.countOrders();
+    }
+
+    @Override
+    public List<RoomOrder> getTodayOrders(String today) {
+        return roomOrderMapper.selectTodayOrders(today);
+    }
 }

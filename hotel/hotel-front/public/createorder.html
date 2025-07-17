@@ -152,6 +152,9 @@
                             });
                         } else {
                             layer.msg(res.message || '预订失败', {icon: 2});
+                            if(res.message && res.message.indexOf('暂无可预订房间') !== -1) {
+                                $('.order-btn').prop('disabled', true).css('background', '#ccc').text('不可预订');
+                            }
                         }
                     },
                     error: function() {

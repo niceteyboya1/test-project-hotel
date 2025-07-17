@@ -11,4 +11,10 @@ public interface RoomOrderMapper {
     List<RoomOrder> selectByMemberId(Integer memberId);
     RoomOrder selectById(Integer orderId);
     int deleteById(Integer orderId);
+    List<RoomOrder> selectAll();
+    int countOverlapOrder(@org.apache.ibatis.annotations.Param("memberId") Integer memberId,
+                        @org.apache.ibatis.annotations.Param("enterTime") java.util.Date enterTime,
+                        @org.apache.ibatis.annotations.Param("leaveTime") java.util.Date leaveTime);
+    int countOrders();
+    List<RoomOrder> selectTodayOrders(@org.apache.ibatis.annotations.Param("today") String today);
 }

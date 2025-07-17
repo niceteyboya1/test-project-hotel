@@ -13,4 +13,5 @@ public class Member {
     private String phone;
     private String idCardNo;
     private BigDecimal balance;
+    private java.util.Date createdAt;
 } 

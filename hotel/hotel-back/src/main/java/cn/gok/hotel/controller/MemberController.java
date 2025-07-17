@@ -52,4 +52,25 @@ public class MemberController {
         }
         return result;
     }
+
+    @GetMapping("/profile")
+    @ResponseBody
+    public Map<String, Object> getProfile(HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        Integer memberId = (Integer) session.getAttribute("memberId");
+        if (memberId == null) {
+            result.put("success", false);
+            result.put("message", "未登录");
+            return result;
+        }
+        Member member = memberService.findById(memberId);
+        if (member == null) {
+            result.put("success", false);
+            result.put("message", "用户不存在");
+            return result;
+        }
+        result.put("success", true);
+        result.put("data", member);
+        return result;
+    }
 } 

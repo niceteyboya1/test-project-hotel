@@ -15,6 +15,22 @@
 <select id="selectById" resultType="cn.gok.hotel.entity.RoomOrder">
     SELECT * FROM room_order WHERE order_id = #{orderId}
 </select>
+<select id="selectAll" resultType="cn.gok.hotel.entity.RoomOrder">
+    SELECT * FROM room_order ORDER BY checkin_time DESC
+</select>
+<select id="countOverlapOrder" resultType="int">
+    SELECT COUNT(*) FROM room_order
+    WHERE member_id = #{memberId}
+      AND (
+        (enter_time &lt;= #{leaveTime} AND leave_time &gt;= #{enterTime})
+      )
+</select>
+<select id="countOrders" resultType="int">
+    SELECT COUNT(*) FROM room_order
+</select>
+<select id="selectTodayOrders" resultType="cn.gok.hotel.entity.RoomOrder">
+    SELECT * FROM room_order WHERE DATE(checkin_time) = #{today} ORDER BY checkin_time DESC
+</select>
 <delete id="deleteById">
     DELETE FROM room_order WHERE order_id = #{orderId}
 </delete>
