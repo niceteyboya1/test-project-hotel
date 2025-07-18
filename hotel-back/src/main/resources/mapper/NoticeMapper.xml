@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.gok.hotel.mapper.NoticeMapper">
+    <insert id="insertNotice" parameterType="cn.gok.hotel.entity.Notice">
+        INSERT INTO notice (member_id, title, content, notice_time, is_read)
+        VALUES (#{memberId}, #{title}, #{content}, NOW(), #{isRead})
+    </insert>
+    <select id="selectByMemberId" resultType="cn.gok.hotel.entity.Notice">
+        SELECT id, member_id, title, content, notice_time, is_read
+        FROM notice
+        WHERE member_id = #{memberId}
+        ORDER BY notice_time DESC
+    </select>
+</mapper> 
