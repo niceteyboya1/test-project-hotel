@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>酒店管理系统-首页</title>
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <script src="js/layer/layer.js"></script>
+</head>
+<style>
+    #header {
+        width: 100%;
+        height: 56px;
+        background: linear-gradient(90deg, #ffe066 0%, #fffbe6 100%);
+        box-shadow: 0 2px 8px #ffe06655;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 32px;
+        font-size: 22px;
+        font-weight: bold;
+        color: #bfa100;
+        letter-spacing: 2px;
+    }
+    #header .hotel-name {
+        font-size: 22px;
+        font-weight: bold;
+    }
+    #header .user-name {
+        font-size: 16px;
+        font-weight: normal;
+    }
+    .room-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-gap: 32px 24px;
+        max-width: 900px;
+        margin: 32px auto 0 auto;
+    }
+    .room-card {
+        background: #fffbe6;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px #ffe06655;
+        padding: 24px 18px 18px 18px;
+        text-align: center;
+        transition: box-shadow 0.2s;
+        position: relative;
+    }
+    .room-card:hover {
+        box-shadow: 0 6px 24px #ffe06699;
+    }
+    .room-card img {
+        width: 120px;
+        height: 90px;
+        border-radius: 8px;
+        margin-bottom: 12px;
+        object-fit: cover;
+    }
+    .room-card .room-name {
+        font-size: 18px;
+        font-weight: bold;
+        color: #bfa100;
+        margin-bottom: 8px;
+    }
+    .room-card .room-price {
+        color: #ff9800;
+        font-size: 16px;
+        margin-bottom: 6px;
+    }
+</style>
+<body>
+    <div id="sidebar">
+        <div class="sidebar-title">功能菜单</div>
+        <button class="sidebar-btn" id="homeBtn">主页</button>
+        <button class="sidebar-btn" id="orderBtn">房间预订</button>
+    </div>
+    <div id="header" style="position:relative;display:flex;align-items:center;justify-content:center;">
+        <img src="img/生成酒店商标.png" alt="酒店商标" style="height:28px;width:28px;border-radius:6px;margin-right:12px;vertical-align:middle;position:absolute;left:32px;">
+        <span class="hotel-name" style="margin:0 auto;">gkhdhotel</span>
+        <div id="user-info" style="position:absolute;top:0;right:32px;height:56px;display:flex;align-items:center;z-index:2;">
+            <button id="ordersBtn" style="margin-right:16px;padding:6px 18px;font-size:15px;background:#ffe066;color:#bfa100;border:none;border-radius:6px;box-shadow:0 1px 4px #ffe06655;cursor:pointer;">我的订单</button>
+            <button id="profileBtn" style="padding:6px 18px;font-size:15px;background:#ffe066;color:#bfa100;border:none;border-radius:6px;box-shadow:0 1px 4px #ffe06655;cursor:pointer;">个人中心</button>
+        </div>
+        <span class="user-name" style="display:none;">用户：<span id="username-header"></span></span>
+    </div>
+    <div id="hotel-art-text" style="text-align:center;margin:32px 0 16px 0;">
+        <span style="font-size:28px;font-family:'华文行楷',cursive;font-weight:bold;color:#111;letter-spacing:2px;text-shadow:2px 2px 8px #eee,0 2px 4px #bbb;">
+            我们致力于提供良好的住宿环境和为您提供美好的体验
+        </span>
+    </div>
+    <div id="hotel-slider" style="width:600px;height:320px;margin:0 auto 32px auto;position:relative;overflow:hidden;border-radius:16px;box-shadow:0 4px 24px #ccc;">
+        <img id="slider-img" src="img/生成豪华酒店外景图(1).png" alt="酒店外景" style="width:100%;height:100%;object-fit:cover;transition:opacity 0.8s;">
+    </div>
+    
+    <div style="width:100%;text-align:center;margin:24px 0 12px 0;">
+        <button id="goCreateOrder" style="padding:10px 32px;font-size:18px;background:linear-gradient(90deg,#ffe066,#ffd600);color:#bfa100;border:none;border-radius:8px;box-shadow:0 2px 8px #ffe06655;cursor:pointer;font-weight:bold;">我要预订</button>
+    </div>
+    <style>
+        body {
+            margin-left: 180px;
+        }
+        #sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 180px;
+            height: 100vh;
+            background: #b2f0f7;
+            box-shadow: 2px 0 8px #eee;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 32px;
+        }
+        .sidebar-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #1976d2;
+            margin-bottom: 32px;
+        }
+        .sidebar-btn {
+            width: 140px;
+            margin-bottom: 18px;
+            padding: 10px 0;
+            font-size: 16px;
+            background: #fffbe6;
+            color: #1976d2;
+            border: none;
+            border-radius: 6px;
+            box-shadow: 0 1px 4px #ffe06655;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .sidebar-btn:hover {
+            background: #ffe066;
+            color: #bfa100;
+        }
+    </style>
+    <script>
+        // 假设用户名通过localStorage传递
+        document.getElementById('username-header').textContent = localStorage.getItem('username') || '未登录';
+        var sliderImgs = [
+    'img/生成豪华酒店外景图(1).png',
+    'img/生成豪华酒店外景图(2).png',
+    'img/生成豪华酒店外景图(3).png'
+];
+        var sliderIndex = 0;
+        setInterval(function() {
+            sliderIndex = (sliderIndex + 1) % sliderImgs.length;
+            var $img = $('#slider-img');
+            $img.fadeOut(400, function() {
+                $img.attr('src', sliderImgs[sliderIndex]).fadeIn(400);
+            });
+        }, 3000);
+        $('#orderBtn').click(function() {
+            $('#hotel-art-text').hide();
+            $('#hotel-slider').hide();
+    // 重新加载房型列表
+    $.ajax({
+        url: 'http://127.0.0.1:8081/api/roomtype/list',
+        type: 'GET',
+        success: function(res) {
+            var html = '';
+            if (res && res.length) {
+                html += '<div class="room-grid">';
+                for (var i = 0; i < res.length; i++) {
+                    html += '<div class="room-card" data-typeid="' + res[i].roomTypeId + '">';
+                    html += '<img src="img/' + ('img'+(i+1)+'.png') + '" alt="房间图片">';
+                    html += '<div class="room-name">' + res[i].roomTypeName + '</div>';
+                    html += '<div class="room-price">￥' + res[i].price + '</div>';
+                    html += '</div>';
+                }
+                html += '</div>';
+            } else {
+                html = '暂无房间数据';
+            }
+            $('#room-list').html(html);
+        },
+        error: function() {
+            $('#room-list').html('房间数据加载失败');
+        }
+    });
+});
+$('#homeBtn').click(function() {
+    // 清空房间列表内容
+    $('#hotel-art-text').show();
+    $('#hotel-slider').show();
+    $('#room-list').html('');
+});
+    // 点击预订按钮跳转到预订页面
+    $('#goCreateOrder').click(function() {
+        window.location.href = 'createorder.html';
+    });
+    $(document).on('click', '.room-card img', function() {
+        var typeId = $(this).closest('.room-card').data('typeid');
+        $.ajax({
+            url: 'http://127.0.0.1:8081/api/roomtype/roomtype/detail/' + typeId,
+            method: 'GET',
+            success: function(res) {
+                layer.open({
+                    title: '房型详情',
+                    content: '<div>简介：' + res.areaDesc + '</div>'
+                           + '<div>剩余空房：' + res.freeCount + ' 间</div>'
+                });
+            },
+            error: function() {
+                layer.msg('获取房型信息失败');
+            }
+        });
+    });
+    $(document).on('click', '#ordersBtn', function() {
+    layer.confirm('即将跳转到我的订单页面，是否继续？', function(index){
+        window.location.href = 'orders.html';
+        layer.close(index);
+    });
+});
+    $(document).on('click', '#profileBtn', function() {
+    layer.confirm('即将跳转到个人中心页面，是否继续？', function(index){
+        window.location.href = 'profile.html';
+        layer.close(index);
+    });
+});
+</script>
+<!-- 在合适位置加一个容器 -->
+<div id="room-list"></div>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>用户注册</title>
+    <script src="./js/jquery-3.2.1.min.js"></script>
+    <script src="./js/layer/layer.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #fffbe6 0%, #ffe066 100%);
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+        }
+        .register-container {
+            width: 360px;
+            margin: 120px auto;
+            background: #fffde7cc;
+            border-radius: 18px;
+            box-shadow: 0 4px 24px 0 #ffe06699;
+            padding: 36px 32px 28px 32px;
+            text-align: center;
+            animation: fadeInDown 1s;
+        }
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-60px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        h2 {
+            color: #ffb300;
+            margin-bottom: 28px;
+            letter-spacing: 2px;
+        }
+        .form-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 18px;
+        }
+        label {
+            color: #bfa100;
+            font-weight: bold;
+            margin-right: 12px;
+            min-width: 70px;
+            text-align: right;
+        }
+        input[type="text"], input[type="password"] {
+            width: 70%;
+            padding: 8px 12px;
+            border: 1.5px solid #ffe066;
+            border-radius: 6px;
+            background: #fffbe6;
+            color: #bfa100;
+            font-size: 15px;
+            transition: box-shadow 0.3s, border-color 0.3s;
+        }
+        input[type="text"]:focus, input[type="password"]:focus {
+            border-color: #ffd600;
+            box-shadow: 0 0 8px #ffe06699;
+            outline: none;
+        }
+        .register-btn {
+            width: 80%;
+            padding: 10px 0;
+            background: linear-gradient(90deg, #ffe066 0%, #ffd600 100%);
+            color: #bfa100;
+            border: none;
+            border-radius: 8px;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 8px #ffe06655;
+            transition: background 0.3s, transform 0.2s;
+            margin-top: 10px;
+        }
+        .register-btn:active {
+            background: linear-gradient(90deg, #ffd600 0%, #ffe066 100%);
+            transform: scale(0.97);
+        }
+        .register-btn.loading {
+            background: repeating-linear-gradient(90deg, #ffe066, #ffd600 20px, #ffe066 40px);
+            color: #bfa10099;
+            animation: btnLoading 1s linear infinite;
+        }
+        @keyframes btnLoading {
+            0% { background-position: 0 0; }
+            100% { background-position: 80px 0; }
+        }
+        .to-login {
+            margin-top: 12px;
+        }
+        .to-login a {
+            color: #bfa100;
+            text-decoration: underline;
+            font-size: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <h2>用户注册</h2>
+        <form id="registerForm">
+            <div class="form-row">
+                <label for="username">用户名：</label>
+                <input type="text" id="username" name="username" required placeholder="请输入用户名" />
+            </div>
+            <div class="form-row">
+                <label for="password">密码：</label>
+                <input type="password" id="password" name="password" required placeholder="请输入密码" />
+            </div>
+            <div class="form-row">
+                <label for="realName">真实姓名：</label>
+                <input type="text" id="realName" name="realName" required placeholder="请输入真实姓名" />
+            </div>
+            <div class="form-row">
+                <label for="phone">手机号：</label>
+                <input type="text" id="phone" name="phone" required placeholder="请输入手机号" />
+            </div>
+            <button type="submit" class="register-btn" id="registerBtn">注册</button>
+        </form>
+        <div class="to-login">
+            <a href="login.html">已有账号？去登录</a>
+        </div>
+    </div>
+    <script>
+        $(function() {
+            $('#registerForm').on('submit', function(e) {
+                e.preventDefault();
+                var data = {
+                    username: $('#username').val(),
+                    password: $('#password').val(),
+                    realName: $('#realName').val(),
+                    phone: $('#phone').val()
+                };
+                var $btn = $('#registerBtn');
+                $btn.addClass('loading').text('注册中...');
+                $.ajax({
+                    url: 'http://localhost:8081/member/register',
+                    type: 'POST',
+                    data: data,
+                    success: function(res) {
+                        setTimeout(function() {
+                            $btn.removeClass('loading').text('注册');
+                            if(res.success) {
+                                layer.msg('注册成功', {icon: 1, time: 1500}, function(){
+                                    window.location.href = 'login.html';
+                                });
+                            } else {
+                                layer.msg(res.message || '注册失败', {icon: 2});
+                            }
+                        }, 600);
+                    },
+                    error: function() {
+                        $btn.removeClass('loading').text('注册');
+                        layer.msg('请求失败', {icon: 2});
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
