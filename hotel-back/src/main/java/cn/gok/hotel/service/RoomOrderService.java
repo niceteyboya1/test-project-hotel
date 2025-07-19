@@ -10,7 +10,7 @@ public interface RoomOrderService {
     boolean deleteOrder(Integer orderId, Integer memberId);
     List<RoomOrder> findAll();
     RoomOrder findById(Integer orderId);
-    boolean hasOverlapOrder(Integer memberId, java.util.Date enterTime, java.util.Date leaveTime);
+    boolean hasOverlapOrder(Integer memberId, java.time.LocalDate enterTime, java.time.LocalDate leaveTime);
     int countOrders();
     List<RoomOrder> getTodayOrders(String today);
 }

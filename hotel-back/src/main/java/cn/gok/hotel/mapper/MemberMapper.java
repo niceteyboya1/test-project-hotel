@@ -12,4 +12,5 @@ public interface MemberMapper {
     Member findById(@Param("memberId") Integer memberId);
     int countMembers();
     int updateMemberBalance(@Param("memberId") Integer memberId, @Param("balance") java.math.BigDecimal balance);
+    int updateProfile(Member member);
 } 

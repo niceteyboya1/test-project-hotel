@@ -3,12 +3,12 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.gok.hotel.mapper.RoomNumberMapper">
     <select id="findFreeRoomsByType" parameterType="int" resultType="cn.gok.hotel.entity.RoomNumber">
-        SELECT room_number_id, room_number_name, room_type_id, status
+        SELECT room_number_id, room_number_name, room_type_id, status, cleaning_start_time, previous_status
         FROM room_number
         WHERE room_type_id = #{roomTypeId} AND status = 0
     </select>
     <select id="selectAll" resultType="cn.gok.hotel.entity.RoomNumber">
-        SELECT rn.*, rt.room_type_name AS roomTypeName
+        SELECT rn.room_number_id, rn.room_number_name, rn.room_type_id, rn.status, rn.cleaning_start_time, rn.previous_status, rt.room_type_name AS roomTypeName
         FROM room_number rn
         LEFT JOIN room_type rt ON rn.room_type_id = rt.room_type_id
         ORDER BY rn.room_number_id ASC
@@ -26,11 +26,11 @@
         SELECT COUNT(*) FROM room_number WHERE room_type_id = #{roomTypeId} AND status = 0
     </select>
     <select id="selectById" parameterType="int" resultType="cn.gok.hotel.entity.RoomNumber">
-        SELECT * FROM room_number WHERE room_number_id = #{roomNumberId}
+        SELECT room_number_id, room_number_name, room_type_id, status, cleaning_start_time, previous_status FROM room_number WHERE room_number_id = #{roomNumberId}
     </select>
     <update id="updateRoom" parameterType="cn.gok.hotel.entity.RoomNumber">
         UPDATE room_number
-        SET status = #{status}, cleaning_start_time = #{cleaningStartTime}
+        SET status = #{status}, cleaning_start_time = #{cleaningStartTime}, previous_status = #{previousStatus}
         WHERE room_number_id = #{roomNumberId}
     </update>
 </mapper>

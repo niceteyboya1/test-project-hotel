@@ -129,6 +129,16 @@ public class AdminController {
         Map<String, Object> result = new HashMap<>();
         try {
             List<cn.gok.hotel.entity.RoomNumber> rooms = roomNumberService.findAll();
+            
+            // 调试信息：打印清洁中的房间时间
+            for (cn.gok.hotel.entity.RoomNumber room : rooms) {
+                if (room.getStatus() != null && room.getStatus() == 2 && room.getCleaningStartTime() != null) {
+                    System.out.println("房间 " + room.getRoomNumberName() + " 清洁开始时间: " + 
+                                     room.getCleaningStartTime() + " (" + 
+                                     new java.util.Date(room.getCleaningStartTime()) + ")");
+                }
+            }
+            
             result.put("success", true);
             result.put("data", rooms);
         } catch (Exception e) {
@@ -270,7 +280,7 @@ public class AdminController {
     /**
      * 修改房间状态，支持设置为清洁中（status=2），并记录清洁开始时间
      * @param roomNumberId 房间号ID
-     * @param status 新状态（0=空闲，1=已入住，2=清洁中）
+     * @param status 新状态（0=空闲，1=已入住，2=清洁中，3=已预定）
      * @return 操作结果
      */
     @PostMapping("/set-room-status")
@@ -284,18 +294,80 @@ public class AdminController {
                 result.put("message", "房间不存在");
                 return result;
             }
+            
+            // 检查状态转换的合法性
             if (status == 2) { // 设置为清洁中
+                // 已入住的房间不能设置为清洁中
+                if (room.getStatus() == 1) {
+                    result.put("success", false);
+                    result.put("message", "已入住的房间不能设置为清洁中");
+                    return result;
+                }
+                // 记录清洁前的状态
+                room.setPreviousStatus(room.getStatus());
                 room.setStatus(2);
-                room.setCleaningStartTime(System.currentTimeMillis());
+                // 使用当前时间的毫秒时间戳
+                long currentTime = System.currentTimeMillis();
+                room.setCleaningStartTime(currentTime);
+                System.out.println("设置清洁开始时间: " + currentTime + " (" + new java.util.Date(currentTime) + ")");
             } else {
                 room.setStatus(status);
                 room.setCleaningStartTime(null);
+                room.setPreviousStatus(null);
             }
             roomNumberService.updateRoom(room);
             result.put("success", true);
         } catch (Exception e) {
             result.put("success", false);
             result.put("message", "设置房间状态失败");
+        }
+        return result;
+    }
+
+    /**
+     * 完成房间清洁，恢复清洁前的状态
+     * @param roomNumberId 房间号ID
+     * @return 操作结果
+     */
+    @PostMapping("/complete-cleaning")
+    @ResponseBody
+    public Map<String, Object> completeCleaning(@RequestParam Integer roomNumberId) {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            cn.gok.hotel.entity.RoomNumber room = roomNumberService.findById(roomNumberId);
+            if (room == null) {
+                result.put("success", false);
+                result.put("message", "房间不存在");
+                return result;
+            }
+            
+            // 检查房间是否在清洁中
+            if (room.getStatus() != 2) {
+                result.put("success", false);
+                result.put("message", "房间不在清洁中状态");
+                return result;
+            }
+            
+            // 恢复清洁前的状态
+            Integer previousStatus = room.getPreviousStatus();
+            if (previousStatus != null) {
+                room.setStatus(previousStatus);
+                System.out.println("房间 " + room.getRoomNumberName() + " 清洁完成，恢复为状态: " + previousStatus);
+            } else {
+                room.setStatus(0); // 默认设为空闲
+                System.out.println("房间 " + room.getRoomNumberName() + " 清洁完成，设为空闲");
+            }
+            
+            // 清除清洁相关信息
+            room.setCleaningStartTime(null);
+            room.setPreviousStatus(null);
+            
+            roomNumberService.updateRoom(room);
+            result.put("success", true);
+            result.put("message", "清洁完成，房间状态已恢复");
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", "完成清洁失败");
         }
         return result;
     }

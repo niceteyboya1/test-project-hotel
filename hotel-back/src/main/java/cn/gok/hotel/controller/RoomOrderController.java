@@ -15,6 +15,8 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 
 @RestController
@@ -40,12 +42,12 @@ public class RoomOrderController {
             result.put("message", "请先登录");
             return result;
         }
-        java.util.Date enterDate = null;
-        java.util.Date leaveDate = null;
+        LocalDate enterDate = null;
+        LocalDate leaveDate = null;
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            enterDate = sdf.parse(checkin);
-            leaveDate = sdf.parse(checkout);
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            enterDate = LocalDate.parse(checkin, dtf);
+            leaveDate = LocalDate.parse(checkout, dtf);
         } catch (Exception e) {
             // 日期解析失败可忽略或记录日志
         }
@@ -75,17 +77,12 @@ public class RoomOrderController {
         order.setRoomNumberId(room.getRoomNumberId());
         order.setRoomNumberName(room.getRoomNumberName());
         order.setCheckinTime(LocalDateTime.now().toString());
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            order.setEnterTime(sdf.parse(checkin));
-            order.setLeaveTime(sdf.parse(checkout));
-        } catch (Exception e) {
-            // 日期解析失败可忽略或记录日志
-        }
+        order.setEnterTime(enterDate);
+        order.setLeaveTime(leaveDate);
         // 其它字段赋值...
         try {
             roomOrderService.createOrder(order);
-            roomNumberService.updateRoomStatus(room.getRoomNumberId(), 1);
+            roomNumberService.updateRoomStatus(room.getRoomNumberId(), 3); // 设置为已预定状态
             result.put("success", true);
             result.put("roomNumberName", room.getRoomNumberName());
         } catch (RuntimeException e) {

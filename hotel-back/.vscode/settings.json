@@ -1,0 +1,18 @@
+{
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "java.compile.nullAnalysis.mode": "automatic",
+    "java.project.sourcePaths": [
+        "src/main/java"
+    ],
+    "java.project.outputPath": "target/classes",
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar"
+    ],
+    "java.dependency.packagePresentation": "hierarchical",
+    "java.dependency.syncWithFolderExplorer": true,
+    "java.maven.downloadSources": true,
+    "java.maven.downloadJavadoc": true,
+    "java.import.maven.enabled": true,
+    "java.import.gradle.enabled": false,
+    "java.project.importOnFirstTimeStartup": "automatic"
+} 

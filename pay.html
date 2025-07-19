@@ -25,15 +25,15 @@
     <div class="pay-title">订单支付</div>
     <div class="order-info">
         <div>订单号：<span id="orderId"></span></div>
-        <div>金额：<span id="amount"></span> 元</div>
+        <div>金额�?span id="amount"></span> �?/div>
     </div>
     <div class="pay-type">
         <label><input type="radio" name="payType" value="wechat" checked> 微信支付</label>
-        <label><input type="radio" name="payType" value="alipay"> 支付宝支付</label>
+        <label><input type="radio" name="payType" value="alipay"> 支付宝支�?/label>
     </div>
-    <button class="pay-btn" id="genQrcodeBtn">生成二维码</button>
+    <button class="pay-btn" id="genQrcodeBtn">生成二维�?/button>
     <div id="qrcode"></div>
-    <div class="pay-tip" id="payTip">请使用微信或支付宝扫码支付</div>
+    <div class="pay-tip" id="payTip">请使用微信或支付宝扫码支�?/div>
 </div>
 <script>
     // 获取URL参数
@@ -61,7 +61,7 @@
                 height: 200,
                 text: payUrl
             });
-            $("#payTip").text("请使用" + (payType === "wechat" ? "微信" : "支付宝") + "扫码支付");
+            $("#payTip").text("请使�? + (payType === "wechat" ? "微信" : "支付�?) + "扫码支付");
             $(this).hide();
             $(".pay-type").hide(); // 隐藏支付方式选择
         });

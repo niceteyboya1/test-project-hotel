@@ -95,4 +95,40 @@ public class MemberController {
     result.put("newBalance", newBalance);
     return result;
 }
+
+    @PostMapping("/update-profile")
+    @ResponseBody
+    public Map<String, Object> updateProfile(@RequestParam String realName,
+                                           @RequestParam String phone,
+                                           @RequestParam(required = false) String idCardNo,
+                                           HttpSession session) {
+        Map<String, Object> result = new HashMap<>();
+        Integer memberId = (Integer) session.getAttribute("memberId");
+        if (memberId == null) {
+            result.put("success", false);
+            result.put("message", "未登录");
+            return result;
+        }
+        
+        Member member = memberService.findById(memberId);
+        if (member == null) {
+            result.put("success", false);
+            result.put("message", "用户不存在");
+            return result;
+        }
+        
+        // 更新用户信息
+        member.setRealName(realName);
+        member.setPhone(phone);
+        member.setIdCardNo(idCardNo);
+        
+        boolean success = memberService.updateProfile(member);
+        result.put("success", success);
+        if (success) {
+            result.put("message", "个人信息更新成功");
+        } else {
+            result.put("message", "个人信息更新失败");
+        }
+        return result;
+    }
 } 

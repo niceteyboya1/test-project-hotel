@@ -157,7 +157,7 @@
             $('#hotel-slider').hide();
     // 重新加载房型列表
     $.ajax({
-        url: 'http://127.0.0.1:8081/api/roomtype/list',
+                        url: 'http://127.0.0.1:8082/api/roomtype/list',
         type: 'GET',
         success: function(res) {
             var html = '';
@@ -194,7 +194,7 @@ $('#homeBtn').click(function() {
     $(document).on('click', '.room-card img', function() {
         var typeId = $(this).closest('.room-card').data('typeid');
         $.ajax({
-            url: 'http://127.0.0.1:8081/api/roomtype/roomtype/detail/' + typeId,
+                            url: 'http://127.0.0.1:8082/api/roomtype/roomtype/detail/' + typeId,
             method: 'GET',
             success: function(res) {
                 layer.open({

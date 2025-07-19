@@ -11,4 +11,5 @@ public interface MemberService {
     Member findById(Integer memberId);
     int countMembers();
     void updateBalance(Integer memberId, java.math.BigDecimal balance);
+    boolean updateProfile(Member member);
 } 

@@ -288,7 +288,7 @@
         function loadDashboard() {
             // 加载统计数据
             $.ajax({
-                url: 'http://localhost:8081/admin/stats',
+                url: 'http://localhost:8082/admin/stats',
                 type: 'GET',
                 success: function(res) {
                     if (res.success) {
@@ -301,7 +301,7 @@
             });
             // 加载当天订单
             $.ajax({
-                url: 'http://localhost:8081/admin/today-orders',
+                url: 'http://localhost:8082/admin/today-orders',
                 type: 'GET',
                 success: function(res) {
                     if (res.success && res.data) {
@@ -319,7 +319,7 @@
         }
         function loadMembers() {
             $.ajax({
-                url: 'http://localhost:8081/admin/members',
+                url: 'http://localhost:8082/admin/members',
                 type: 'GET',
                 success: function(res) {
                     if (res.success && res.data) {
@@ -341,7 +341,7 @@
         }
         function loadOrders() {
             $.ajax({
-                url: 'http://localhost:8081/admin/orders',
+                url: 'http://localhost:8082/admin/orders',
                 type: 'GET',
                 success: function(res) {
                     if (res.success && res.data) {
@@ -356,41 +356,63 @@
             });
         }
         function loadRooms() {
+            console.log('开始加载房间信息...');
             $.ajax({
-                url: 'http://localhost:8081/admin/rooms',
+                url: 'http://localhost:8082/admin/rooms',
                 type: 'GET',
                 success: function(res) {
+                    console.log('房间API响应:', res);
                     if (res.success && res.data) {
                         var html = '<table><tr><th>房间号</th><th>房型</th><th>状态</th><th>操作</th></tr>';
                         res.data.forEach(function(room) {
-                            var statusText = room.status === 0 ? '空闲' : (room.status === 1 ? '已入住' : '清洁中');
+                            var statusText = '';
+                            switch(room.status) {
+                                case 0: statusText = '空闲'; break;
+                                case 1: statusText = '已入住'; break;
+                                case 2: statusText = '清洁中'; break;
+                                case 3: statusText = '已预定'; break;
+                                default: statusText = '未知状态'; break;
+                            }
                             html += '<tr>';
                             html += '<td>' + room.roomNumberName + '</td>';
                             html += '<td>' + (room.roomTypeName || '') + '</td>';
                             html += '<td>' + statusText;
                             if(room.status === 2 && room.cleaningStartTime) {
-                                html += '<br/><span style="color:#888;font-size:12px;">清洁开始：' + formatDateTime(new Date(room.cleaningStartTime).toISOString()) + '</span>';
+                                html += '<br/><span style="color:#888;font-size:12px;">清洁开始：' + formatCleaningTime(room.cleaningStartTime) + '</span>';
                             }
                             html += '</td>';
                             html += '<td>';
                             if (room.status !== 0) {
                                 html += '<button class="btn" onclick="setRoomFree(' + room.roomNumberId + ')">设为空闲</button> ';
                             }
-                            if (room.status !== 2) {
-                                html += '<button class="btn" onclick="setRoomCleaning(' + room.roomNumberId + ')">设为清洁中</button>';
+                            if (room.status !== 2 && room.status !== 1) {
+                                html += '<button class="btn" onclick="setRoomCleaning(' + room.roomNumberId + ')">设为清洁中</button> ';
+                            }
+                            if (room.status === 0) {
+                                html += '<button class="btn" onclick="setRoomReserved(' + room.roomNumberId + ')">设为已预定</button>';
+                            }
+                            if (room.status === 2) {
+                                html += '<button class="btn btn-success" onclick="completeCleaning(' + room.roomNumberId + ')">完成清洁</button>';
                             }
                             html += '</td>';
                             html += '</tr>';
                         });
                         html += '</table>';
                         $('#roomsList').html(html);
+                    } else {
+                        console.log('房间数据加载失败:', res);
+                        $('#roomsList').html('<p style="color:red;">加载房间信息失败: ' + (res.message || '未知错误') + '</p>');
                     }
+                },
+                error: function(xhr, status, error) {
+                    console.log('房间API请求失败:', xhr, status, error);
+                    $('#roomsList').html('<p style="color:red;">网络错误，无法加载房间信息</p>');
                 }
             });
         }
         function setRoomFree(roomNumberId) {
             if (!confirm('确定要将该房间设为空闲吗？')) return;
-            $.post('http://localhost:8081/admin/set-room-free', { roomNumberId: roomNumberId }, function(res) {
+            $.post('http://localhost:8082/admin/set-room-free', { roomNumberId: roomNumberId }, function(res) {
                 if (res.success) {
                     alert('设置成功！');
                     loadRooms();
@@ -401,7 +423,7 @@
         }
         function setRoomCleaning(roomNumberId) {
             if (!confirm('确定要将该房间设为清洁中吗？')) return;
-            $.post('http://localhost:8081/admin/set-room-status', { roomNumberId: roomNumberId, status: 2 }, function(res) {
+            $.post('http://localhost:8082/admin/set-room-status', { roomNumberId: roomNumberId, status: 2 }, function(res) {
                 if (res.success) {
                     alert('设置成功！');
                     loadRooms();
@@ -410,9 +432,33 @@
                 }
             });
         }
+        
+        function setRoomReserved(roomNumberId) {
+            if (!confirm('确定要将该房间设为已预定吗？')) return;
+            $.post('http://localhost:8082/admin/set-room-status', { roomNumberId: roomNumberId, status: 3 }, function(res) {
+                if (res.success) {
+                    alert('设置成功！');
+                    loadRooms();
+                } else {
+                    alert('设置失败：' + (res.message || '未知错误'));
+                }
+            });
+        }
+        
+        function completeCleaning(roomNumberId) {
+            if (!confirm('确定要完成该房间的清洁吗？')) return;
+            $.post('http://localhost:8082/admin/complete-cleaning', { roomNumberId: roomNumberId }, function(res) {
+                if (res.success) {
+                    alert('清洁完成！房间状态已恢复');
+                    loadRooms();
+                } else {
+                    alert('操作失败：' + (res.message || '未知错误'));
+                }
+            });
+        }
         function loadAdmins() {
             $.ajax({
-                url: 'http://localhost:8081/admin/list',
+                url: 'http://localhost:8082/admin/list',
                 type: 'GET',
                 success: function(res) {
                     if (res && res.length > 0) {
@@ -445,7 +491,7 @@
         }
         function logout() {
             $.ajax({
-                url: 'http://localhost:8081/admin/logout',
+                url: 'http://localhost:8082/admin/logout',
                 type: 'POST',
                 success: function() {
                     localStorage.removeItem('adminUsername');
@@ -457,7 +503,7 @@
         function deleteOrder(orderId) {
             if (confirm('确定要删除这个订单吗？')) {
                 $.ajax({
-                    url: 'http://localhost:8081/admin/delete-order',
+                    url: 'http://localhost:8082/admin/delete-order',
                     type: 'POST',
                     data: { orderId: orderId },
                     success: function(res) {
@@ -474,7 +520,7 @@
         function deleteAdmin(adminId) {
             if (confirm('确定要删除这个管理员吗？')) {
                 $.ajax({
-                    url: 'http://localhost:8081/admin/delete',
+                    url: 'http://localhost:8082/admin/delete',
                     type: 'POST',
                     data: { adminId: adminId },
                     success: function(res) {
@@ -517,7 +563,7 @@
                 role: $('#newRole').val()
             };
             $.ajax({
-                url: 'http://localhost:8081/admin/add',
+                url: 'http://localhost:8082/admin/add',
                 type: 'POST',
                 data: data,
                 success: function(res) {
@@ -546,6 +592,19 @@
             // 兼容 2024-07-18T10:23:45.123 和 2024-07-18 10:23:45
             var s = str.replace('T', ' ').split('.')[0];
             return s.length > 16 ? s.substring(0, 16) : s;
+        }
+        
+        function formatCleaningTime(timestamp) {
+            if (!timestamp) return '';
+            // 处理毫秒时间戳
+            var date = new Date(parseInt(timestamp));
+            var year = date.getFullYear();
+            var month = (date.getMonth() + 1).toString().padStart(2, '0');
+            var day = date.getDate().toString().padStart(2, '0');
+            var hours = date.getHours().toString().padStart(2, '0');
+            var minutes = date.getMinutes().toString().padStart(2, '0');
+            var seconds = date.getSeconds().toString().padStart(2, '0');
+            return year + '-' + month + '-' + day + ' ' + hours + ':' + minutes + ':' + seconds;
         }
     </script>
 </body>

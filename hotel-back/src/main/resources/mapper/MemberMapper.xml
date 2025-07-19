@@ -33,4 +33,12 @@
     <update id="updateMemberBalance" parameterType="map">
         UPDATE member SET balance = #{balance} WHERE member_id = #{memberId}
     </update>
+    
+    <update id="updateProfile" parameterType="cn.gok.hotel.entity.Member">
+        UPDATE member 
+        SET real_name = #{realName}, 
+            phone = #{phone}, 
+            id_card_no = #{idCardNo}
+        WHERE member_id = #{memberId}
+    </update>
 </mapper> 

@@ -86,9 +86,38 @@
             0% { background-position: 0 0; }
             100% { background-position: 80px 0; }
         }
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(90deg, #ffe066 0%, #ffd600 100%);
+            color: #bfa100;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 8px #ffe06655;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .back-btn:hover {
+            background: linear-gradient(90deg, #ffd600 0%, #ffe066 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px #ffe06677;
+        }
+        .back-btn:active {
+            transform: translateY(0);
+        }
+        body {
+            position: relative;
+        }
     </style>
 </head>
 <body>
+    <a href="index.html" class="back-btn">← 返回首页</a>
     <div class="login-container">
         <h2>用户登录</h2>
         <form id="loginForm">
@@ -115,7 +144,7 @@
                 var $btn = $('#loginBtn');
                 $btn.addClass('loading').text('登录中...');
                 $.ajax({
-                    url: 'http://127.0.0.1:8081/member/checklogin',
+                    url: 'http://127.0.0.1:8082/member/checklogin',
                     type: 'POST',
                     data: { username: username, password: password },
                     xhrFields: { withCredentials: true }, // 关键

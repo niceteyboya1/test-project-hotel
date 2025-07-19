@@ -55,10 +55,39 @@
             background: linear-gradient(90deg, #ffd600 0%, #ffe066 100%);
             transform: scale(0.97);
         }
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(90deg, #ffe066 0%, #ffd600 100%);
+            color: #bfa100;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 8px #ffe06655;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .back-btn:hover {
+            background: linear-gradient(90deg, #ffd600 0%, #ffe066 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px #ffe06677;
+        }
+        .back-btn:active {
+            transform: translateY(0);
+        }
+        .order-container {
+            position: relative;
+        }
     </style>
 </head>
 <body>
     <div class="order-container">
+        <a href="index.html" class="back-btn">← 返回首页</a>
         <h2>我的订单</h2>
         <div>当前用户：<span id="username-header"></span></div>
         <table id="orders-table">
@@ -87,13 +116,37 @@
         // 格式化日期为yyyy-MM-dd
         function formatDateShort(str) {
             if (!str) return '';
-            if (str.length >= 10) return str.substring(0, 10);
+            
+            // 如果是Date对象，转换为本地日期字符串
+            if (str instanceof Date) {
+                var year = str.getFullYear();
+                var month = (str.getMonth() + 1).toString().padStart(2, '0');
+                var day = str.getDate().toString().padStart(2, '0');
+                return year + '-' + month + '-' + day;
+            }
+            
+            // 如果是字符串类型
+            if (typeof str === 'string') {
+                // 如果是日期类型（如 2025-07-18），直接返回
+                if (str.length === 10 && str.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                    return str;
+                }
+                // 如果是日期时间字符串（如 2025-07-17T15:34:34.187051），提取日期部分
+                if (str.length > 10 && str.includes('T')) {
+                    return str.substring(0, 10);
+                }
+                // 如果是其他格式，尝试截取前10个字符
+                if (str.length >= 10) {
+                    return str.substring(0, 10);
+                }
+            }
+            
             return str;
         }
         // 加载订单列表
         function loadOrders() {
             $.ajax({
-                url: 'http://127.0.0.1:8081/api/order/list',
+                url: 'http://127.0.0.1:8082/api/order/list',
                 type: 'GET',
                 xhrFields: { withCredentials: true },
                 success: function(res) {
@@ -127,7 +180,7 @@
             var orderId = $(this).data('id');
             layer.confirm('确定要退单吗？', {icon: 3, title:'提示'}, function(index){
                 $.ajax({
-                    url: 'http://127.0.0.1:8081/api/order/delete',
+                    url: 'http://127.0.0.1:8082/api/order/delete',
                     type: 'POST',
                     data: { orderId: orderId },
                     xhrFields: { withCredentials: true },

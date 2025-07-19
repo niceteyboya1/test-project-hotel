@@ -76,9 +76,38 @@
             justify-content: center;
             margin-bottom: 18px;
         }
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background: linear-gradient(90deg, #ffe066 0%, #ffd600 100%);
+            color: #bfa100;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 8px #ffe06655;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .back-btn:hover {
+            background: linear-gradient(90deg, #ffd600 0%, #ffe066 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px #ffe06677;
+        }
+        .back-btn:active {
+            transform: translateY(0);
+        }
+        body {
+            position: relative;
+        }
     </style>
 </head>
 <body>
+    <a href="index.html" class="back-btn">← 返回首页</a>
     <div class="order-container">
         <h2>预订房间</h2>
         <div>当前用户：<span id="username-header"></span></div>
@@ -119,7 +148,7 @@
         // 加载房型下拉框
         $(function() {
             $.ajax({
-                url: 'http://127.0.0.1:8081/api/roomtype/list',
+                url: 'http://127.0.0.1:8082/api/roomtype/list',
                 type: 'GET',
                 success: function(res) {
                     if(res && res.length) {
@@ -141,7 +170,7 @@
                 };
                 // 这里可用ajax提交到后端接口
                 $.ajax({
-                    url: 'http://127.0.0.1:8081/api/order/create',
+                    url: 'http://127.0.0.1:8082/api/order/create',
                     type: 'POST',
                     data: data,
                     xhrFields: { withCredentials: true }, // 关键：带上cookie/session
@@ -161,6 +190,19 @@
                         layer.msg('请求失败', {icon: 2});
                     }
                 });
+            });
+        });
+        // 自动填充身份证号
+        $(function() {
+            $.ajax({
+                url: 'http://127.0.0.1:8082/member/profile',
+                type: 'GET',
+                xhrFields: { withCredentials: true },
+                success: function(res) {
+                    if(res && res.success && res.data && res.data.idCardNo) {
+                        $('#idCard').val(res.data.idCardNo);
+                    }
+                }
             });
         });
         // 计算总价

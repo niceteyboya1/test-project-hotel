@@ -9,15 +9,58 @@
             #{memberId}, #{memberName}, #{contactPhone}, #{roomTypeId}, #{roomNumberId}, #{roomNumberName}, #{checkinTime}, #{enterTime}, #{leaveTime}
         )
     </insert>
-    <select id="selectByMemberId" resultType="cn.gok.hotel.entity.RoomOrder">
-    SELECT * FROM room_order WHERE member_id = #{memberId} ORDER BY checkin_time DESC
-</select>
-<select id="selectById" resultType="cn.gok.hotel.entity.RoomOrder">
-    SELECT * FROM room_order WHERE order_id = #{orderId}
-</select>
-<select id="selectAll" resultType="cn.gok.hotel.entity.RoomOrder">
-    SELECT * FROM room_order ORDER BY checkin_time DESC
-</select>
+    <select id="selectByMemberId" resultMap="RoomOrderResultMap">
+        SELECT 
+            order_id,
+            member_id,
+            member_name,
+            contact_phone,
+            order_status,
+            checkin_time,
+            enter_time,
+            leave_time,
+            room_type_id,
+            room_number_id,
+            room_number_name,
+            guest_id_info
+        FROM room_order 
+        WHERE member_id = #{memberId} 
+        ORDER BY checkin_time DESC
+    </select>
+    <select id="selectById" resultMap="RoomOrderResultMap">
+        SELECT * FROM room_order WHERE order_id = #{orderId}
+    </select>
+    <select id="selectAll" resultMap="RoomOrderResultMap">
+        SELECT 
+            order_id,
+            member_id,
+            member_name,
+            contact_phone,
+            order_status,
+            checkin_time,
+            enter_time,
+            leave_time,
+            room_type_id,
+            room_number_id,
+            room_number_name,
+            guest_id_info
+        FROM room_order
+        ORDER BY checkin_time DESC
+    </select>
+    <resultMap id="RoomOrderResultMap" type="cn.gok.hotel.entity.RoomOrder">
+        <id property="orderId" column="order_id" />
+        <result property="memberId" column="member_id" />
+        <result property="memberName" column="member_name" />
+        <result property="contactPhone" column="contact_phone" />
+        <result property="orderStatus" column="order_status" />
+        <result property="checkinTime" column="checkin_time" />
+        <result property="enterTime" column="enter_time" javaType="java.time.LocalDate" />
+        <result property="leaveTime" column="leave_time" javaType="java.time.LocalDate" />
+        <result property="roomTypeId" column="room_type_id" />
+        <result property="roomNumberId" column="room_number_id" />
+        <result property="roomNumberName" column="room_number_name" />
+        <result property="guestIdInfo" column="guest_id_info" />
+    </resultMap>
 <select id="countOverlapOrder" resultType="int">
     SELECT COUNT(*) FROM room_order
     WHERE member_id = #{memberId}
@@ -29,8 +72,55 @@
     SELECT COUNT(*) FROM room_order
 </select>
 <select id="selectTodayOrders" resultType="cn.gok.hotel.entity.RoomOrder">
-    SELECT * FROM room_order WHERE DATE(checkin_time) = #{today} ORDER BY checkin_time DESC
+    SELECT 
+        order_id,
+        member_id,
+        member_name,
+        contact_phone,
+        order_status,
+        checkin_time,
+        DATE_FORMAT(enter_time, '%Y-%m-%d') as enter_time,
+        DATE_FORMAT(leave_time, '%Y-%m-%d') as leave_time,
+        room_type_id,
+        room_number_id,
+        room_number_name,
+        guest_id_info
+    FROM room_order 
+    WHERE DATE(checkin_time) = #{today} 
+    ORDER BY checkin_time DESC
 </select>
+<select id="findTodayCheckinOrders" resultType="cn.gok.hotel.entity.RoomOrder">
+    SELECT 
+        order_id,
+        member_id,
+        member_name,
+        contact_phone,
+        order_status,
+        checkin_time,
+        DATE_FORMAT(enter_time, '%Y-%m-%d') as enter_time,
+        DATE_FORMAT(leave_time, '%Y-%m-%d') as leave_time,
+        room_type_id,
+        room_number_id,
+        room_number_name,
+        guest_id_info
+    FROM room_order 
+    WHERE DATE(enter_time) = #{checkinDate} AND order_status = 1 
+    ORDER BY enter_time ASC
+</select>
+<update id="updateOrder" parameterType="cn.gok.hotel.entity.RoomOrder">
+    UPDATE room_order SET 
+        member_id = #{memberId},
+        member_name = #{memberName},
+        contact_phone = #{contactPhone},
+        room_type_id = #{roomTypeId},
+        room_number_id = #{roomNumberId},
+        room_number_name = #{roomNumberName},
+        checkin_time = #{checkinTime},
+        enter_time = #{enterTime},
+        leave_time = #{leaveTime},
+        order_status = #{orderStatus}
+    WHERE order_id = #{orderId}
+</update>
 <delete id="deleteById">
     DELETE FROM room_order WHERE order_id = #{orderId}
 </delete>

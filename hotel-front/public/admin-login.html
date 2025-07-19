@@ -124,7 +124,7 @@
                 }
                 $btn.addClass('loading').text('登录中...');
                 $.ajax({
-                    url: 'http://localhost:8081/admin/login',
+                    url: 'http://localhost:8082/admin/login',
                     type: 'POST',
                     data: { username: username, password: password },
                     xhrFields: { withCredentials: true },

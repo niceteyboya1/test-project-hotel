@@ -42,7 +42,9 @@ CREATE TABLE IF NOT EXISTS room_number (
     room_number_id INT PRIMARY KEY AUTO_INCREMENT,
     room_number_name VARCHAR(20) NOT NULL UNIQUE,
     room_type_id INT NOT NULL,
-    room_status INT DEFAULT 0 COMMENT '0:空闲 1:已入住',
+    status INT DEFAULT 0 COMMENT '0:空闲 1:已入住 2:清洁中 3:已预定',
+    cleaning_start_time BIGINT NULL COMMENT '清洁开始时间（时间戳）',
+    previous_status INT NULL COMMENT '清洁前的状态',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (room_type_id) REFERENCES room_type(room_type_id)
 );
@@ -92,7 +94,7 @@ INSERT INTO room_type (room_type_name, room_type_desc, price, capacity) VALUES
 ('豪华套房', '宽敞的套房，配备高级设施', 588.00, 4);
 
 -- 插入示例房间数据
-INSERT INTO room_number (room_number_name, room_type_id, room_status) VALUES
+INSERT INTO room_number (room_number_name, room_type_id, status) VALUES
 ('101', 1, 0),
 ('102', 1, 0),
 ('103', 1, 0),

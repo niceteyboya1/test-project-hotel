@@ -42,4 +42,9 @@ public class MemberServiceImpl implements MemberService {
 public void updateBalance(Integer memberId, java.math.BigDecimal balance) {
     memberMapper.updateMemberBalance(memberId, balance);
 }
+
+    @Override
+    public boolean updateProfile(Member member) {
+        return memberMapper.updateProfile(member) > 0;
+    }
 }

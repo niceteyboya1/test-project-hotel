@@ -11,6 +11,7 @@ import cn.gok.hotel.mapper.MemberMapper;
 import cn.gok.hotel.mapper.RoomTypeMapper;
 import cn.gok.hotel.entity.Member;
 import cn.gok.hotel.entity.RoomType;
+import java.time.LocalDate;
 
 @Service
 public class RoomOrderServiceImpl implements RoomOrderService {
@@ -43,8 +44,8 @@ public boolean deleteOrder(Integer orderId, Integer memberId) {
 }
 
     @Override
-    public boolean hasOverlapOrder(Integer memberId, java.util.Date enterTime, java.util.Date leaveTime) {
-        int count = roomOrderMapper.countOverlapOrder(memberId, enterTime, leaveTime);
+    public boolean hasOverlapOrder(Integer memberId, LocalDate enterTime, LocalDate leaveTime) {
+        int count = roomOrderMapper.countOverlapOrder(memberId, java.sql.Date.valueOf(enterTime), java.sql.Date.valueOf(leaveTime));
         return count > 0;
     }
 

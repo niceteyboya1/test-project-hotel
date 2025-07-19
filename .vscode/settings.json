@@ -1,0 +1,22 @@
+{
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "java.compile.nullAnalysis.mode": "automatic",
+    "java.import.maven.enabled": true,
+    "java.import.gradle.enabled": false,
+    "java.maven.downloadSources": true,
+    "java.maven.downloadJavadoc": true,
+    "java.project.importOnFirstTimeStartup": "automatic",
+    "java.dependency.packagePresentation": "hierarchical",
+    "java.dependency.syncWithFolderExplorer": true,
+    "files.exclude": {
+        "**/target": true,
+        "**/.classpath": true,
+        "**/.project": true,
+        "**/.settings": true,
+        "**/.factorypath": true
+    },
+    "java.project.sourcePaths": [
+        "hotel-back/src/main/java"
+    ],
+    "java.project.outputPath": "hotel-back/target/classes"
+} 
